@@ -8,9 +8,9 @@ import javax.imageio.ImageIO;
 
 public class NeuralNetwork {
 
-  private double alpha = 0.1; // 0.01
-  private double gamma = 0.5; // 0.9
-  private int era = 50;
+  private double alpha = 0.1; // 0.1
+  private double gamma = 0.9; // 0.9
+  private int era = 300;
   //  private NeuronsLayer input = new NeuronsLayer((byte) 0, 2, 3, alpha, gamma);
 //  private NeuronsLayer hidden1 = new NeuronsLayer((byte) 1, 3, 2, alpha, gamma);
 //  private NeuronsLayer hidden2 = new NeuronsLayer((byte) 2, 2, 1, alpha, gamma);
@@ -41,7 +41,7 @@ public class NeuralNetwork {
   public void training() throws Exception {
     for (int i = 0; i < era; i++) {
       System.out.println("era = " + i);
-      for (int picture = 1; picture <= 20; picture++) {
+      for (int picture = 1; picture <= 40; picture++) {
         for (int sign = 0; sign < 12; sign++) {
           double[] tmp = readImage(sign, picture);
           input.setO(tmp);
@@ -58,7 +58,7 @@ public class NeuralNetwork {
       double accuracy = 0;
       double loss = 0;
       double correct_answer = 0;
-      for (int picture = 1; picture <= 20; picture++) {
+      for (int picture = 41; picture <= 46; picture++) {
         for (int sign = 0; sign < 12; sign++) {
           double[] tmp = readImage(sign, picture);
           input.setO(tmp);
@@ -73,8 +73,8 @@ public class NeuralNetwork {
           loss += getLoss(sign);
         }
       }
-      accuracy = correct_answer / (20 * 12);
-      loss = loss / (20*12);
+      accuracy = correct_answer / (6 * 12);
+      loss = loss / (6*12);
       writeToFile("Accuracy.txt", i, accuracy);
       writeToFile("Loss.txt", i, loss);
 
@@ -91,6 +91,7 @@ public class NeuralNetwork {
       }
     }
     return Math.sqrt(loss);
+    //return loss/2;
   }
 
   public void writeToFile(String fileName, int era, double accuracy) {

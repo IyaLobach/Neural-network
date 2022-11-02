@@ -123,9 +123,9 @@ public class NeuronsLayer {
   public void setDeltaOutput(int trueValueIndex) {
     for (int i = 0; i < size; i++) {
       if (i == trueValueIndex) {
-        delta[i] = (O[i] - 1) * (1-O[i]) * O[i];
+        delta[i] = (O[i] - 1) * O[i] *(1-O[i]);
       } else {
-        delta[i] =  (O[i]) * (1-O[i]) * O[i];
+        delta[i] =  (O[i]) * O[i] *(1-O[i]);
       }
     }
   }
@@ -136,7 +136,7 @@ public class NeuronsLayer {
       for (int j = 0; j < next.getSize(); j++) {
         tmpSum += next.getDelta(j) * w[i][j];
       }
-      delta[i] = tmpSum * (1-O[i]) * O[i];
+      delta[i] = tmpSum * O[i] *(1-O[i]);
     }
   }
 
@@ -144,7 +144,7 @@ public class NeuronsLayer {
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < next.getSize(); j++) {
         double wDelta = (1- gamma) * alpha * O[i] * next.getDelta(j) + gamma * deltaW[i][j];
-        //double wDelta = alpha * O[i] * next.getDelta(j);
+       // double wDelta = alpha * O[i] * next.getDelta(j);
         deltaW[i][j] = wDelta;
         w[i][j] -= wDelta;
         //w[i][j] += wDelta;
