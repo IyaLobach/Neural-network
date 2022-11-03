@@ -1,4 +1,6 @@
 .idea/
 out/
+iconForButton/
 NeuralNetwork.iml
 2 lr.iml
+src/ImageEdit.java
