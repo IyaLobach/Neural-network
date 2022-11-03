@@ -52,26 +52,48 @@ public class Interface {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                // тут вызывается функция распознания изображения imageForSelect.png
+                // тут вызывается функция распознания изображения imageForSelect.png,
+                // а ответ этой функции выводится в соответствующую панель
             }
         };
+
         JMenuItem saveMenu = new JMenuItem(saveAction);
         menuBar.add(saveMenu);
-
         JMenu fileMenu = new JMenu("Обучить");
-        menuBar.add(fileMenu);
+
+        String[] signs = {
+                "Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"};
+        for (int i = 0; i < 12; i++) {
+            int finalI = i;
+            Action signZodiacAction = new AbstractAction(signs[finalI]) {
+                public void actionPerformed(ActionEvent event) {
+                    System.out.println("selected " + signs[finalI]);
+                    // тут вызывается функция обучения с учителем
+                }
+            };
+            JMenuItem loadMenu = new JMenuItem(signZodiacAction);
+            fileMenu.add(loadMenu);
+            menuBar.add(fileMenu);
+        }
+
 
         Action saveasAction = new AbstractAction("Очистить холст") {
             public void actionPerformed(ActionEvent event) {
-                System.out.println("clear");
-                panel.clearHolst();
+                Graphics g = holst.getGraphics();
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setColor(currentColor); // установка цвета
+                g2.setStroke(new BasicStroke(1000.0f));
+                g2.setColor(Color.WHITE);
+                g2.drawLine(0, 0, 320, 320);
+                panel.repaint();
+                frame.repaint();
             }
         };
         JMenuItem saveasMenu = new JMenuItem(saveasAction);
         menuBar.add(saveasMenu);
 
         panel = new MyPanel();
-        panel.setBounds(30, 30, 320, 320);
+        panel.setBounds(20, 0, 320, 320);
         panel.setBackground(Color.white);
         panel.setOpaque(true);
         frame.add(panel);
