@@ -1,3 +1,5 @@
+import com.suai.NeuralNetwork;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -17,20 +19,24 @@ public class Interface {
     MyPanel panel;
     BufferedImage holst; // поверхность рисования
     JTextArea messageNS; // окно вывода для сообщений от нейронной сети
-
+    NeuralNetwork nn = new NeuralNetwork();
 
     private void createButtonLearningSystem(JMenuBar menuBar) {
         JMenu fileMenu = new JMenu("Обучить");
 
         String[] signs = {
-                "Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"};
+                "Aquarius", "Aries", "Cancer", "Capricorn", "Gemini", "Leo",
+                "Libra", "Pisces", "Sagittarius", "Scorpio", "Taurus", "Virgo"};
         for (int i = 0; i < 12; i++) {
             int finalI = i;
             Action signZodiacAction = new AbstractAction(signs[finalI]) {
                 public void actionPerformed(ActionEvent event) {
                     System.out.println("selected " + signs[finalI]);
                     // тут вызывается функция обучения с учителем
-                    messageNS.setText(signs[finalI] /*сюда подать ответ нейронной сети*/);
+                    System.out.println(finalI +"\t" + signs[finalI]);
+                    nn.learningOnePicture(finalI);
+                    messageNS.setText("сеть прошла тренировку" /*сюда подать ответ нейронной сети*/);
+                    clearHolst();
 
                 }
             };
@@ -58,6 +64,8 @@ public class Interface {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                String answer = nn.detecting();
+                messageNS.setText(answer);
                 // тут вызывается функция распознания изображения imageForSelect.png,
                 // а ответ этой функции выводится в соответствующую панель
             }
@@ -70,20 +78,32 @@ public class Interface {
     private void createButtonClearHolst(JMenuBar menuBar) {
         Action saveasAction = new AbstractAction("Очистить холст") {
             public void actionPerformed(ActionEvent event) {
-                Graphics g = holst.getGraphics();
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setColor(currentColor); // установка цвета
-                g2.setStroke(new BasicStroke(1000.0f));
-                g2.setColor(Color.WHITE);
-                g2.drawLine(0, 0, 320, 320);
-                panel.repaint();
-                frame.repaint();
+//                Graphics g = holst.getGraphics();
+//                Graphics2D g2 = (Graphics2D) g;
+//                g2.setColor(currentColor); // установка цвета
+//                g2.setStroke(new BasicStroke(1000.0f));
+//                g2.setColor(Color.WHITE);
+//                g2.drawLine(0, 0, 320, 320);
+//                panel.repaint();
+//                frame.repaint();
+                clearHolst();
             }
         };
         JMenuItem saveasMenu = new JMenuItem(saveasAction);
         menuBar.add(saveasMenu);
     }
 
+    private void clearHolst(){
+        Graphics g = holst.getGraphics();
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(currentColor); // установка цвета
+        g2.setStroke(new BasicStroke(1000.0f));
+        g2.setColor(Color.WHITE);
+        g2.drawLine(0, 0, 320, 320);
+        messageNS.setText(" ");
+        panel.repaint();
+        frame.repaint();
+    }
     private void createReplyPane() {
         messageNS = new JTextArea();
         messageNS.setBounds(0, 0, 380, 20);
@@ -127,7 +147,9 @@ public class Interface {
 
     public Interface() {
         initAllComponent();
+    }
 
+    public void run() {
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (pressed == true) {
@@ -138,7 +160,7 @@ public class Interface {
                     switch (rezhim) {
                         // кисть
                         case 1:
-                            g2.setStroke(new BasicStroke(12.0f));
+                            g2.setStroke(new BasicStroke(18.0f));
                             g2.drawLine(xPad, yPad, e.getX(), e.getY());
                             break;
                         // ластик
@@ -197,10 +219,11 @@ public class Interface {
     }
 
     public static void main(String[] args) {
-
+        Interface myInterface = new Interface();
+        myInterface.nn.mainFunction();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new Interface();
+                myInterface.run();
             }
         });
     }
