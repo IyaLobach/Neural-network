@@ -10,7 +10,7 @@ public class NeuralNetwork {
 
   private double alpha = 0.1; // 0.1
   private double gamma = 0.9; // 0.9
-  private int era = 300;
+  private int era = 100;
   //  private NeuronsLayer input = new NeuronsLayer((byte) 0, 2, 3, alpha, gamma);
 //  private NeuronsLayer hidden1 = new NeuronsLayer((byte) 1, 3, 2, alpha, gamma);
 //  private NeuronsLayer hidden2 = new NeuronsLayer((byte) 2, 2, 1, alpha, gamma);
@@ -38,7 +38,54 @@ public class NeuralNetwork {
 //    changeWeight();
 //  }
 
-  public void training() throws Exception {
+  public String detecting() throws Exception {
+    double[] tmp = readImageForDetecting();
+    input.setO(tmp);
+    input.setNet(tmp);
+    setOutputValue();
+    int index = output.getMaxIndex();
+    System.out.println("Answer: " + zodiacSigns[index] + "\n");
+    return zodiacSigns[index];
+  }
+
+  public void testing(int era) throws Exception {
+    double accuracy = 0;
+    double loss = 0;
+    double correct_answer = 0;
+    for (int picture = 41; picture <= 46; picture++) {
+      for (int sign = 0; sign < 12; sign++) {
+        double[] tmp = readImage(sign, picture);
+        input.setO(tmp);
+        input.setNet(tmp);
+        setOutputValue();
+        System.out.println(zodiacSigns[sign] + picture);
+        int index = output.getMaxIndex();
+        System.out.println("Answer: " + zodiacSigns[index] + "\n");
+        if (index == sign) {
+          correct_answer++;
+        }
+        loss += getLoss(sign);
+      }
+    }
+    accuracy = correct_answer / (6 * 12);
+    loss = loss / (6 * 12);
+    writeToFile("Accuracy.txt", era, accuracy);
+    writeToFile("Loss.txt", era, loss);
+  }
+
+  public void learningOnePicture(int sign) throws Exception {
+    double[] tmp = readImageForDetecting();
+    input.setO(tmp);
+    input.setNet(tmp);
+    setOutputValue();
+    setDelta(sign);
+    changeWeight();
+    System.out.println(zodiacSigns[sign]);
+    int index = output.getMaxIndex();
+    System.out.println("answer: " + zodiacSigns[index] + "\n");
+  }
+
+  public void learning() throws Exception {
     for (int i = 0; i < era; i++) {
       System.out.println("era = " + i);
       for (int picture = 1; picture <= 40; picture++) {
@@ -54,30 +101,7 @@ public class NeuralNetwork {
           System.out.println("answer: " + zodiacSigns[index] + "\n");
         }
       }
-
-      double accuracy = 0;
-      double loss = 0;
-      double correct_answer = 0;
-      for (int picture = 41; picture <= 46; picture++) {
-        for (int sign = 0; sign < 12; sign++) {
-          double[] tmp = readImage(sign, picture);
-          input.setO(tmp);
-          input.setNet(tmp);
-          setOutputValue();
-          System.out.println(zodiacSigns[sign] + picture);
-          int index = output.getMaxIndex();
-          System.out.println("Answer: " + zodiacSigns[index] + "\n");
-          if (index == sign) {
-            correct_answer++;
-          }
-          loss += getLoss(sign);
-        }
-      }
-      accuracy = correct_answer / (6 * 12);
-      loss = loss / (6*12);
-      writeToFile("Accuracy.txt", i, accuracy);
-      writeToFile("Loss.txt", i, loss);
-
+      testing(i);
     }
   }
 
@@ -155,24 +179,36 @@ public class NeuralNetwork {
         index++;
       }
     }
-//    index = 0;
-//    for (int i = 0; i < 32; i++) {
-//      for (int j = 0; j < 32; j++) {
-//        System.out.print((int)O[index] + " ");
-//        index++;
-//      }
-//      System.out.println();
-//    }
     return O;
   }
 
+  public double[] readImageForDetecting() throws Exception {
+    String imagePath =
+        "C:/Users/iyush/IdeaProjects/NeuralNetwork/src/com/suai/imageForSelect.png";
+    BufferedImage myPicture = ImageIO.read(new File(imagePath));
+    double[] O = new double[myPicture.getHeight() * myPicture.getWidth()];
+    int index = 0;
+    for (int i = 0; i < myPicture.getHeight(); i++) {
+      for (int j = 0; j < myPicture.getWidth(); j++) {
+        Color c = new Color(myPicture.getRGB(j, i));
+        int rgb = c.getBlue() + c.getRed() + c.getGreen();
+        if (rgb <= 500) {
+          O[index] = 1.0;
+        } else {
+          O[index] = 0.0;
+        }
+        index++;
+      }
+    }
+    return O;
+  }
 
-  public static void main(String[] args) {
+  public static void main (String[] args) {
     try {
       NeuralNetwork neuralNetwork = new NeuralNetwork();
       neuralNetwork.clearFile("Accuracy.txt");
       neuralNetwork.clearFile("Loss.txt");
-      neuralNetwork.training();
+      neuralNetwork.learning();
     } catch (Exception e) {
       System.out.println(e.getMessage());
       e.printStackTrace();
