@@ -21,12 +21,13 @@ public class Interface {
     JButton buttonsForColors;
     JColorChooser colorChooser;
     BufferedImage holst; // поверхность рисования
+    JTextArea messageNS; // окно вывода для сообщений от нейронной сети
     boolean loading = false;// если мы загружаем картинку
     String fileName;
 
     public Interface() {
         frame = new JFrame("perceptron");
-        frame.setSize(380, 380);
+        frame.setSize(380, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         currentColor = Color.black;
 
@@ -57,6 +58,11 @@ public class Interface {
             }
         };
 
+        messageNS = new JTextArea();
+        messageNS.setBounds(0, 0, 380, 20);
+        messageNS.setBackground(Color.LIGHT_GRAY);
+        frame.add(messageNS);
+
         JMenuItem saveMenu = new JMenuItem(saveAction);
         menuBar.add(saveMenu);
         JMenu fileMenu = new JMenu("Обучить");
@@ -69,6 +75,8 @@ public class Interface {
                 public void actionPerformed(ActionEvent event) {
                     System.out.println("selected " + signs[finalI]);
                     // тут вызывается функция обучения с учителем
+                    messageNS.setText(signs[finalI] /*сюда подать ответ нейронной сети*/);
+
                 }
             };
             JMenuItem loadMenu = new JMenuItem(signZodiacAction);
@@ -93,7 +101,7 @@ public class Interface {
         menuBar.add(saveasMenu);
 
         panel = new MyPanel();
-        panel.setBounds(20, 0, 320, 320);
+        panel.setBounds(20, 30, 320, 320);
         panel.setBackground(Color.white);
         panel.setOpaque(true);
         frame.add(panel);
