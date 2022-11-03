@@ -10,7 +10,7 @@ public class NeuralNetwork {
 
     private double alpha = 0.1; // 0.1
     private double gamma = 0.9; // 0.9
-    private int era = 200;
+    private int era = 300;
     private NeuronsLayer input = new NeuronsLayer((byte) 0, 1024, 512, alpha, gamma);
     private NeuronsLayer hidden1 = new NeuronsLayer((byte) 1, 512, 256, alpha, gamma);
     private NeuronsLayer hidden2 = new NeuronsLayer((byte) 2, 256, 12, alpha, gamma);
@@ -66,9 +66,6 @@ public class NeuralNetwork {
             setOutputValue();
             setDelta(sign);
             changeWeight();
-            System.out.println(zodiacSigns[sign]);
-            int index = output.getMaxIndex();
-            System.out.println("answer: " + zodiacSigns[index] + "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,10 +191,9 @@ public class NeuralNetwork {
 
     public void mainFunction() {
         try {
-            NeuralNetwork neuralNetwork = new NeuralNetwork();
-            neuralNetwork.clearFile("Accuracy.txt");
-            neuralNetwork.clearFile("Loss.txt");
-            neuralNetwork.learning();
+            clearFile("Accuracy.txt");
+            clearFile("Loss.txt");
+            learning();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
